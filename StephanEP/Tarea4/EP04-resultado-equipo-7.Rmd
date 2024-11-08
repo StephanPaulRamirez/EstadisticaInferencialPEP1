@@ -1,0 +1,143 @@
+---
+title: '}'
+author: "Sofia Gacitua Lopez y Milovan Valenzuela Lobos"
+date: "2024-10-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggpattern)
+require(dplyr)
+library(ggpubr)
+library(kableExtra)
+library(tidyverse)
+library(RVAideMemoire)
+library(rcompanion)
+```
+
+1.-
+Una organización de conservación de la fauna silvestre estudia manadas de tres tipos de animales herbívoros en reservas naturales africanas. Se seleccionó aleatoriamente una muestra de 30 observaciones de los animales que se acercaron a beber agua en el principal afluente de las reservas Etosha y Mahago durante tres días consecutivos del mes de febrero. Se registraron 15 elefantes, 7 antílopes y 8 cebras en la primera, y 9 elefantes, 7 antílopes y 14 cebras en la segunda.
+¿Existe evidencia de que la proporción de especies es la misma en ambas reservas?
+
+```{r pressure, echo=FALSE}
+# Desarrollo pregunta 1
+
+# Hipotesis
+# Ho: La proporcion de especies en ambas reservas es la misma 
+# Ha: La proporcion de especies en ambas reservas no es la misma
+
+reserva_1<- c(15,7,8)
+reserva_2<-c(9,7,14)
+
+# Calcular el valor esperado
+c_1<-24
+c_2<-14
+c_3<-22
+f_1<-30
+f_2<-30
+n<-60
+e_11<-(f_1*c_1)/n
+e_12<-(f_1*c_2)/n
+e_13<-(f_1*c_3)/n
+e_21<-(f_2*c_1)/n
+e_22<-(f_2*c_2)/n
+e_23<-(f_2*c_3)/n
+valor_esperado_reserva_1<-c(e_11,e_12,e_13)
+valor_esperado_reserva_2<-c(e_21,e_22,e_23)
+
+
+tabla<- as.table(rbind(reserva_1,reserva_2))
+dimnames(tabla)<- list(reserva = c("Etosha","Mahago"),
+                       animales = c("Elefante","Antílopes","Cebras"))
+
+print(tabla)
+
+# Tabla de valores esperados
+
+tabla_e<- as.table(rbind(valor_esperado_reserva_1,valor_esperado_reserva_2))
+dimnames(tabla_e)<- list(reserva = c("Etosha","Mahago"),
+                       animales = c("Elefante","Antílopes","Cebras"))
+print(tabla_e)
+
+#Como cada valor esperado es mayor a 5 y cada muestra fue tomada de manera aleatoria y se asume que representa menos de un 10% de la poblacion se puede usar el test chi-cuadrado de homogeneidad
+
+prueba<- chisq.test(tabla)
+print(prueba)
+
+# Conclusion
+# Considerando un nivel de significancia del 0.05 y que el p-value obtenido del test tiene un valor de 0.2084, se falla en rechazar la hipotesis nula, es decir, que no hay suficiente evidencia que sugiera que la proporcion de las especies en ambas reservas no es la misma.
+
+```
+2.-
+En otro planeta se realiza un estudio sobre la preferencia de hábitat de dos especies de alienígenas. Después de observar a una muestra de 9 alienígenas de la especie EA14012-A y 15 de la especie EA14013-B durante meses, se ha determinado que 3 alienígenas de la primera y 11 de la segunda prefieren hábitats acuáticos, mientras los demás prefieren hábitats subterráneos. ¿Existe relación entre las especies alienígenas y elegir hábitats subterráneos o hábitats acuáticos?
+```{r}
+# Desarrollo pregunta 2
+
+# Hipotesis
+#Ho: No existe relacion entre las especies y la eleccion del habitat
+#Ha: Existe relacion entre las especies y la eleccion del habitat
+
+frecuencia<-c(6,3,4,11)
+tabla_contingencia<-matrix(frecuencia,nrow=2,byrow=TRUE,
+                           dimnames = list(especies=c("EA14012-A","EA14013B"),
+                                           Habitat=c("subterranio","acuatico")))
+
+print(tabla_contingencia)
+
+#Como las muestras fueron tomadas de manera aleatoria y se asume que representan menos del 10% de la poblacion y ambas variables son dicotomicas ya que poseen 2 niveles podemos usar la prueba exacta de Fisher.
+
+
+fisher.test(tabla_contingencia)
+
+# Conclusion
+
+# Considerando un nivel de significancia de 0.05 y que el p-value obtenido del test tiene un valor de 0.0918, se falla en rechazar la hipotesis nula, es decir, que no existe suficiente evidencia para afirmar que exista relacion entre las especies y la eleccion del habitat.
+```
+
+```{r}
+#test de mcnemar
+frecuencia<-c(7,5,7,6)
+tabla_contingencia_3<-matrix(frecuencia,nrow=2,byrow=TRUE,
+                           dimnames = list(Real=c("bajo","alto"),
+                                           Sintetico=c("bajo","alto")))
+print(tabla_contingencia_3)
+
+#como la muestra es pareada ya que son de la misma parcela podemos usar mcnemar
+
+
+#hipotesis
+#H0:no hay cambias significativos en el crecimiento de las plantas al cambiarlas de suelo
+#Ha:si hay cambias significativos en el crecimiento de las plantas al cambiarlas de suelo
+
+prubea_3<-mcnemar.test(tabla_contingencia_3)
+print(prubea_3)
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+data<- read.csv2("EP04 Datos.csv")
+#para ver si se cargaron bien los datos
+head(data)
+
+#setear semilla
+set.seed(532)
+#tomamos 50 muestras aleatorias 
+muestras <- data[sample(1:nrow(data),50),]
+id<-muestras$id
+estrategia_1<-muestras$estrategia_1
+estrategia_2<-muestras$estrategia_2
+estrategia_3<-muestras$estrategia_3
+datos<-data.frame(id,estrategia_1,estrategia_2,estrategia_3)
+datos<- datos %>% pivot_longer(c("estrategia_1","estrategia_2","estrategia_3"),
+                               names_to="Estrategia",
+                               values_to="Resultado")
+print(datos)
+
+datos[["id"]]<-factor(datos[["id"]])
+datos[["Estrategia"]]<-factor(datos[["Estrategia"]])
+prueba_4<- cochran.qtest(Resultado~Estrategia | id , data=datos,alpha=0.05)
+print(prueba_4)
+
+```
