@@ -36,6 +36,13 @@ datosP1C <- sample(datosP1$tiempo.C, size = 20)
 Normalidad de las muestras:
 
 ```{r}
+gB = ggqqplot(datosP1, x = "tiempo.B", xlab = "Teóricos", ylab = "Tiempo B", 
+              title = "QQ Plot de tiempo para versión B del algoritmo")
+print(gB)
+
+gC = ggqqplot(datosP1, x = "tiempo.C", xlab = "Teóricos", ylab = "Tiempo C", 
+              title = "QQ Plot de tiempo para versión C del algoritmo")
+print(gC)
 
 print(shapiro.test(datosP1$tiempo.B))
 
@@ -51,7 +58,7 @@ $H_A$ : Si hay diferencias significativas en el tiempo de ejecución entre las v
 
 1 - Independencia entre muestras:
 
-Por el contexto y enunciado, se puede concluir que los datos entre cada muestra son independientes, puesto que provienen de distintas instancias de ejecución y en este caso el algoritmo usado entre muestras es distinto.
+Por el contexto y enunciado, se puede concluir que los datos entre cada muestra son independientes, puesto que provienen de distintas instancias de ejecución y en este caso la versión del algoritmo usado entre muestras es distinto.
 
 2 - La escala de medición es a lo menos ordinal:
 
@@ -86,14 +93,22 @@ datosP2B <- datosP2$mejor.B
 
 ## Revisión de condiciones
 
-Normalidad de la diferencia entre muestras:
+Normalidad de las muestras:
 
 ```{r}
-datosDiffAB <- datosP2A - datosP2B
 
-print(shapiro.test(datosDiffAB))
+gA = ggqqplot(datosP1, x = "mejor.A", xlab = "Teóricos", ylab = "Mejor A", 
+              title = "QQ Plot de cercania de la mejor solución a la solución optima para versión A del algoritmo")
+print(gA)
+
+gB = ggqqplot(datosP1, x = "mejor.B", xlab = "Teóricos", ylab = "Mejor B",
+              title = "QQ Plot de cercania de la mejor solución a la solución optima para versión B del algoritmo")
+print(gB)
+
+print(shapiro.test(datosP1$mejor.A))
+print(shapiro.test(datosP1$mejor.B))
 ```
-Al ver los resultados de la prueba de Shapiro para la diferencia entre los rendimientos del algoritmo A y B para cada instancia, se puede observar que se obtiene un valor p muy bajo, por lo cual se puede concluir la diferencia entre las observaciones apareadas no sigue una distribución normal, por lo tanto se procederá a utilizar una prueba de suma de rangos con signo de Wilcoxon y se utilizará un nivel de significancia de 0.05. Donde las hipótesis serán:
+Al ver los resultados de la pruebas de Shapiro para la población de cada muestra de la cercanía de la mejor solución a la solución optima para el algoritmo A y B para cada instancia, se puede observar que se obtiene un valor p muy bajo, por lo cual se puede concluir que las muestras no provienen de una población que sigue una distribución normal, por lo tanto se procederá a utilizar una prueba de suma de rangos con signo de Wilcoxon y se utilizará un nivel de significancia de 0.05. Donde las hipótesis serán:
 
 $H_0$ : No hay diferencias significativas en el rendimiento entre las versiones A y B del algoritmo cuando las instancias tienen 65 o más nodos.
 
@@ -101,11 +116,11 @@ $H_A$ : Si hay diferencias significativas en el rendimiento entre las versiones 
 
 1 - Independencia entre pares de observaciones:
 
-Por el contexto y enunciado, se puede concluir que los pares de observaciones son independientes, puesto que provienen de distintas instancias de ejecución y ademas se usaran muestras aleatorias usando "sample".
+Por el contexto y enunciado, se puede concluir que los pares de observaciones son independientes, puesto que provienen de distintas instancias de ejecución y ademas se usara una muestra aleatoria usando "sample".
 
 2 - La escala de medición es a lo menos ordinal:
 
-Como la medición en este caso es un porcentaje, medido entre un rango con intervalos entre 0 a 100, claramente tiene sentido hablar de orden entre las medidas.
+Como la medición en este caso es un porcentaje, que toma valores entre 0 a 100, claramente tiene sentido hablar de orden entre las medidas.
 
 ```{r}
 # Prueba de Wilcoxon pareada
@@ -127,9 +142,9 @@ datosP3 <- datos %>% filter(n.nodos > 50)
 
 set.seed(31)
 
-P3A <- sample(datosP3$tiempo.A, size = 15)
-P3B <- sample(datosP3$tiempo.B, size = 14)
-P3C <- sample(datosP3$tiempo.C, size = 13)
+P3A <- rename(datosP3 %>% select(tiempo.A) %>% sample_n(15), tiempo = tiempo.A) %>% mutate(grupo = "A")
+P3B <- rename(datosP3 %>% select(tiempo.B) %>% sample_n(14), tiempo = tiempo.B) %>% mutate(grupo = "B")
+P3C <- rename(datosP3 %>% select(tiempo.C) %>% sample_n(13), tiempo = tiempo.C) %>% mutate(grupo = "C")
 
 ```
 
@@ -138,6 +153,18 @@ P3C <- sample(datosP3$tiempo.C, size = 13)
 Normalidad de las muestras:
 
 ```{r}
+gA = ggqqplot(datosP3, x = "tiempo.A", xlab = "Teóricos", ylab = "Tiempo A", 
+              title = "QQ Plot de tiempo para versión A del algoritmo")
+print(gA)
+
+gB = ggqqplot(datosP3, x = "tiempo.B", xlab = "Teóricos", ylab = "Tiempo B", 
+              title = "QQ Plot de tiempo para versión B del algoritmo")
+print(gB)
+
+gC = ggqqplot(datosP3, x = "tiempo.C", xlab = "Teóricos", ylab = "Tiempo C", 
+              title = "QQ Plot de tiempo para versión C del algoritmo")
+print(gC)
+
 print(shapiro.test(datosP3$tiempo.A))
 
 print(shapiro.test(datosP3$tiempo.B))
@@ -150,6 +177,8 @@ Al ver los resultados de las pruebas de Shapiro para todos los tiempos de las ve
 $H_0$ : No hay diferencias significativas en el tiempo de ejecución entre cualquiera las versiones del algoritmo cuando las instancias tienen 50 o más nodos.
 
 $H_A$ : Al menos una de las versiones del algoritmo presenta diferencias significativas en el tiempo de ejecución con respecto a al menos otra versión del algoritmo cuando las instancias tienen 50 o más nodos.
+
+### Verificación de condiciones:
 
 1 - Variable independiente tiene a lo menos 2 niveles:
 
@@ -165,37 +194,86 @@ Por el contexto y enunciado, se puede concluir que los datos entre cada muestra 
 
 ```{r}
 #Modificación de los datos necesaria para efectuar la prueba
-TiempoP3 <- c(P3A, P3B, P3C)
+datosP3 <- bind_rows(P3A, P3B, P3C)
 
-VersionP3 <- c(rep("A", length(P3A)), rep("B", length(P3B)),
-               rep("C", length(P3C)))
-VersionP3 <- factor(VersionP3)
+datosP3$VersionP3 <- factor(datosP3$grupo)
 
-datosP3 <- data.frame(TiempoP3, VersionP3)
+
 
 alfa <-0.01
 
 # Prueba de Kruskal-Wallis
 
-pruebaP3 <- kruskal.test(TiempoP3 ~ VersionP3, data = datosP3)
+pruebaP3 <- kruskal.test(tiempo ~ VersionP3, data = datosP3)
 print(pruebaP3)
 ```
+Como el valor p obtenido es menor al nivel de significanción escogido, se rechaza la hipótesis nula y se procede a realizar procedimiento post-hoc, en este caso de Benjamini & Hochberg para encontrar el(los) par(es) de versión del algoritmo en los cuales existen diferencias significativas en el tiempo de ejecución con respecto a al menos otra versión del algoritmo cuando las instancias tienen 50 o más nodos.
 
 ```{r}
 # Procedimiento post-hoc de Benjamini & Hochberg
-post_hocP3 <- pairwise.wilcox.test(datosP3[["TiempoP3"]],
+post_hocP3 <- pairwise.wilcox.test(datosP3[["tiempo"]],
                                    datosP3[["VersionP3"]],
                                    p.adjust.method = "BH",
                                    paired = FALSE,
                                    exact = FALSE)
 print(post_hocP3)
 ```
-
+A partir de los resultados del procedimiento post-hoc, considerando un nivel de significación de 0.01, podemos concluir con un 99% de confianza que solamente existe una diferencia significativa en el tiempo de ejecución de la versión B con respecto a la versión C del algoritmo  cuando las instancias tienen 50 o más nodos.
 
 ## Enunciado Pregunta 4
 
 La memorista también sospecha que, al comparar las mismas instancias con iguales características, las mejores soluciones encontradas por las diferentes versiones del algoritmo tienen rendimientos distintos. ¿Estará en lo cierto?
 Para responder, filtren los datos para tener las instancias con 50 o más nodos y seleccionen las columnas con los mejores rendimientos registrados. Usando como semilla el valor 73, obtengan una muestra aleatoria de 22 instancias. Lleven los datos a formato largo y utilicen una prueba no paramétrica apropiada para analizar los datos obtenidos. Realicen un análisis estadístico pertinente (enunciar hipótesis, revisar condiciones, seleccionar pruebas ómnibus y post-hoc según corresponda) para responder la pregunta planteada, utilizando pruebas no paramétricas de ser necesario.
 
-```{}
+```{r}
+datosP4 = datos %>% filter(n.nodos > 50)
+
+set.seed(73)
+
+datosP4 = datosP4 %>% select(instancia, mejor.A, mejor.B, mejor.C) %>% sample_n(22)
 ```
+
+Como se pide realizar una prueba no paramétrica, se procederá a realizar una prueba de Friedman, puesto que las muestras están correlacionadas, además la variable independiente cuenta con tres niveles. Se establece un nivel de significación de 0.05 y las hipótesis en este caso serían:
+
+$H_0$ : Las versiones del algoritmo obtienen su mejor solución con una cercania a la solución optima similar para instancias con 50 o más nodos.
+
+$H_A$ : Al menos una de las versiones del algoritmo obtiene su mejor solución con una cercanía a la solución optima distinta de las demás versiones del algoritmo para instancias con 50 o más nodos.
+
+### Verificación de condiciones 
+
+1 - Tipo de la variable independiente y cantidad de niveles:
+
+Como la variable independiente cuenta con tres niveles y además es de tipo categórica(mejor solución encontrada), queda verificada esta condición .
+
+2 - La escala de medición es a lo menos ordinal:
+
+Como la medición es en porcentaje (de cercanía a la solución optima),  que toma valores entre 0 a 100, claramente tiene sentido hablar de orden entre las medidas.
+
+3 - Independencia entre muestras:
+
+Por el contexto y enunciado, se puede concluir que los datos entre cada muestra son independientes, puesto que provienen de distintas instancias de ejecución.
+
+Como todas las condiciones se cumplen, se procede a utilizar la prueba de Friedman.
+
+```{r}
+
+datosP4_largo <- datosP4 %>% pivot_longer(cols = c(mejor.A, mejor.B, mejor.C), 
+                                         names_to = "version", 
+                                         values_to = "cercania")
+
+friedman_result <- friedman.test(cercania ~ version | instancia, data = datosP4_largo)
+print(friedman_result)
+```
+
+Como el valor p obtenido por la prueba de Freidman es menor al nivel de significación establecido, se rechaza la hipótesis nula y se procede a realizar un procedimiento post-hoc, en este caso se utilizará la corrección de Holm.
+
+```{r}
+post_hocP4 <- pairwise.wilcox.test(datosP4_largo[["cercania"]],
+                                   datosP4_largo[["version"]],
+                                   p.adjust.method = "holm",
+                                   paired = TRUE,
+                                   exact = FALSE)
+print(post_hocP4)
+```
+
+A partir de los resultados del procedimiento post-hoc, considerando un nivel de significación de 0.05, podemos concluir con un 95% de confianza que solamente existe una diferencia significativa en la cercanía de la mejor solución obtenida a la solución optima con la versión A con respecto a la versión B del algoritmo cuando las instancias tienen 50 o más nodos.

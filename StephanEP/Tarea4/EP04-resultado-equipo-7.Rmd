@@ -95,34 +95,55 @@ fisher.test(tabla_contingencia)
 # Considerando un nivel de significancia de 0.05 y que el p-value obtenido del test tiene un valor de 0.0918, se falla en rechazar la hipotesis nula, es decir, que no existe suficiente evidencia para afirmar que exista relacion entre las especies y la eleccion del habitat.
 ```
 
+3.-
+Un grupo de científicas y científicos está llevando a cabo un experimento para evaluar el crecimiento de plantas en condiciones de tierra sintética. Inicialmente, seleccionaron aleatoriamente 25 plantas de la misma parcela de tierra y registraron su crecimiento. Luego, estas plantas fueron trasladadas a la nueva tierra sintética durante un período de tiempo determinado, y posteriormente se registró nuevamente su crecimiento. Los resultados se presentan a continuación:
+- 7 plantas mostraron un crecimiento bajo tanto en la tierra original como en la tierra sintética.
+- 5 plantas que mostraron un crecimiento bajo en la tierra original experimentaron un aumento en su crecimiento al ser trasladadas a la tierra sintética.
+- 6 plantas mantuvieron un alto nivel de crecimiento en ambas condiciones de suelo.
+- 7 plantas mostraron un alto nivel de crecimiento en la tierra original, pero este disminuyó al ser trasladadas a la tierra sintética.
+¿Existe evidencia de que usando tierra sintética haya tenido un efecto significativo en el crecimiento de las plantas?
+
 ```{r}
-#test de mcnemar
+
+# Desarrollo pregunta 3
+
+# Hipotesis
+#H0: No hay cambias significativos en el crecimiento de las plantas al cambiarlas de suelo
+#Ha: Si hay cambias significativos en el crecimiento de las plantas al cambiarlas de suelo
+
 frecuencia<-c(7,5,7,6)
 tabla_contingencia_3<-matrix(frecuencia,nrow=2,byrow=TRUE,
                            dimnames = list(Real=c("bajo","alto"),
                                            Sintetico=c("bajo","alto")))
 print(tabla_contingencia_3)
 
-#como la muestra es pareada ya que son de la misma parcela podemos usar mcnemar
+#Dado a que las muestras son pareadas y que ambas son de la misma parcela, junto con que la respuesta es dicotomica (bajo o alto), se decide usar el test de Mcnemar.
 
+prueba_3<-mcnemar.test(tabla_contingencia_3)
+print(prueba_3)
 
-#hipotesis
-#H0:no hay cambias significativos en el crecimiento de las plantas al cambiarlas de suelo
-#Ha:si hay cambias significativos en el crecimiento de las plantas al cambiarlas de suelo
-
-prubea_3<-mcnemar.test(tabla_contingencia_3)
-print(prubea_3)
-
+#Dado un nivel de significacion de 0.05 y un p-value obtenido del test de 0.7728 se puede concluir con un 95% de confianza de que no hay suficiente evidencia para rechazar la hipotesis nula y por lo tanto no se puede concluir de que la tierra tenga algun efecto significativo en el crecimiento de las plantas.
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+4.-
+Una agencia de marketing desea determinar si hay una diferencia significativa en la efectividad de tres estrategias publicitarias utilizadas para promocionar un nuevo producto. Para ello, se ha recopilado información de personas que fueron expuestas a las tres estrategias publicitarias, registrando si mostraron una aceptación (A) o rechazo (R) a cada una de ellas.
+¿Qué puede concluir la agencia de marketing sobre la efectividad de las estrategias publicitarias para promover el nuevo producto?
+Indicación: obtenga la muestra de 50 personas a partir del archivo “EP04 Datos.csv” que se encuentra en el directorio compartido, usando la semilla 532. Considere un nivel de significación α=0,05.
 ```{r}
+# Desarrollo pregunta 4
+
 data<- read.csv2("EP04 Datos.csv")
-#para ver si se cargaron bien los datos
+
+# Head para ver si se cargaron bien los datos
 head(data)
+
+# Hipotesis
+#H0: La proporcion de personas que aprueban la oferta es la misma para todas las estrategias publicitarias
+#Ha: La proporcion de personas que aprueban la oferta es distinta para al menos una de las estrategias publicitarias
 
 #setear semilla
 set.seed(532)
+
 #tomamos 50 muestras aleatorias 
 muestras <- data[sample(1:nrow(data),50),]
 id<-muestras$id
@@ -135,9 +156,14 @@ datos<- datos %>% pivot_longer(c("estrategia_1","estrategia_2","estrategia_3"),
                                values_to="Resultado")
 print(datos)
 
+# Como la variable de respuesta es dicotomica (aprueba o rechaza), la variable independiente es categorica (estrategia 1, 2 o 3) y asumimos que las observaciones de respuesta son independientes entre si y representan menos del 10% de la poblacion, solo faltaria revisar la ultima condicion (b*k>24), en este caso seria 3*50=150>24 y por lo tanto podemos se puede y se decide usar el test de cochran.
+
 datos[["id"]]<-factor(datos[["id"]])
 datos[["Estrategia"]]<-factor(datos[["Estrategia"]])
 prueba_4<- cochran.qtest(Resultado~Estrategia | id , data=datos,alpha=0.05)
 print(prueba_4)
+
+
+#Dado un nivel de significacion de 0.05 y un p-value obtenido del test de 0.07552 se puede concluir con un 95% de confianza de que no hay suficiente evidencia para rechazar la hipotesis nula y por lo tanto no se puede concluir que la proporcion de personas que aprueban la oferta es distinta para al menos una de las estrategias publicitarias.
 
 ```

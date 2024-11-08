@@ -2,7 +2,7 @@
 title: "Tarea E.I."
 author: "Stephan Paul, Alvaro Zamorano y Braulio Bravo"
 date: "2024-10-01"
-output: pdf_document: default
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -199,5 +199,3 @@ Luego como la muestras vienen de la misma seleccion de atletas las observaciones
 
 Se puede concluir luego de realizar el test que como el p-value es mucho mayor 
 al nivel de significancia (5%), se puede decir que hay suficiente evidencia para rechazar la hipotesis nula en favor de la alternativa, por lo tanto con un 95% de confianza hay más atletas de raza oriental que redujeron sus mejores marcas en al menos 4,8 segundos que atletas de raza blanca que lo hicieron en al menos 3,2 segundos.
-
-
