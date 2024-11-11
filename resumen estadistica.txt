@@ -1,0 +1,237 @@
+resumen estadistica 
+prueba z es adecuada para ingerir acerca de las medias con una o 2 muestras 
+condiciones:
+observaciones independientes
+distrubucion aproximada a la normal 
+n=30
+prueba t de student
+condiciones 
+observaciones independietes entre si 
+distribucion cercana a la normal
+t.test(x,alternative,mu,conf.level) //una muestra
+ ambas son utiles para calcular acerca de la media de una muestra
+t de studen para muestras apareadas 
+t.test(x,y,paired,alternative,mu,conf.level)
+para muestras independientes el paired el igual false
+
+lectura 4 poder estadistico 
+nivel de significancia a probabilidad de comoter error de tipo 1 
+b  probabilidad de cometer error de tipo 2
+poder estadistico=1-b
+en r podemos pwr.norm.test(d,n,sig.levle,power,alternative) //prueba z
+tamaño del efecto normalizdo=d=(u-u0)/o
+si queremos conocer el power este se omite 
+
+potencia de t de student
+pwr.t.test(n,d,sig.level,power,type,alternative)
+typoe="two.sample",".°ne.sample", "paired"
+d=d de cohen 
+en r cohen.d(muestra_a,muestra_b) del paquete effsize
+potencia de la prueba de la difetencia ded 2 proporciones
+pwr.p,test(h,n,sig.level,power,alterntive):para pruebas de una unica proporcion
+pwr.2p.test(h,n,sig.level,power,alternative):para pruebas con 2 proporciones dende ambas muestras son de igual tamaño
+pwr.2p2n.test(h,n1,n2,sig.level,poer,alternative):para pruebas con  2 proporciones y muestras de diferente tamaño
+h=h de cohen en r ES.h(p1,p2) en el caso de una unnica proporcion isasr p2=0.5
+p es probabilidad
+
+lectuura 5 
+inferencia no parametrica con proporciiones
+prueba de chi-cuadrado  enferir sobre proporciones cuando disponemos de 2 variables categoricas  y una es dicotomica (2 niveles)
+condiciones:
+observaciones independientes
+almenos 5 observaciones
+chi-cuadrao de homogeneidad resulta util si queremos determinar si 2 poblaciones (la variable dicotomica)presentan las mismas proporciones en los diferentes nivels de una variables categorica
+en r chisq.test(datos)
+chi-cuadrado de bondad de ajuste  permite comprobar si uuna distribucion de frecuencias observadas se asemeja a una distribucion esperada usalmente se emplea para comprobar si una muestra es representatica de la poblacion 
+en r chisq.test(datos,correct)
+//////////////
+generalmente ne los chiq.test es recomendable hacer una tabla 
+nomina <- c(236, 78, 204, 76, 66)
+muestra <- c(17, 9, 14, 10, 5)
+tabla <- as.table(rbind(nomina, muestra))
+
+////////////
+chi cuadrado de independencia permite determinar si 2 variables categoricas de una misma poblaion son estadisticamente independientes o si por el contrario estan relacionadas 
+en cada una debemos verificar que la cantidad de observaciones esperadas en cada grupo sea almenos 5 con la formula ni*nj/n
+en r chisq.test(tabla)
+
+prueba de exacta de fisher es una alternativa a la chi caudrado de independencia en el caso que ambas variables sean dicoto,icasa 
+las hipotesis son h0 las variables on independiente 
+en r se puede aplicar directamente a la muestra fisher.test(grupo1,grupo2)
+
+prueba de macnemar condidera el analisi de frecuencias apareadas es decir cuadno una misma catacterisrica cin respuesta dicotomica se mide en 2 ocasiones diferentes para el mismo grupo de casos o sea permite determinar si se prodice o no un cambio significativo en las proporciones observadas
+mcnemar.test(modelo_1,modelo_2)
+
+prueba de 1 do cochran es una extension de la prueba de mcnemar ,adecuada cuando la varibale de respuesta es dicotomica y la varibale independiente tiene mas de 2 observaciones apareadaas 
+condiciones :
+variable de respies es dicotomica 
+variable independiente es categorica 
+las observaciones son independientes entre si 
+el tamañp de la muestra es suficientemente grande b*k>24
+en r cochran.qtest(formula,data,alpha)
+formula=respuesta ~ tratamientos | bloques 
+
+pruebas post-hoc  solo si se rechaza la hipotesis nula 
+rcompanion
+pairwiseMcnemar(resultado ~ tratameinto |bloques, data , method)
+method = "holm", "bonferroni"
+
+
+lectura 6
+anova de una via para muestras independientes 
+anova ce centra en la variabilidad de las muestrass , una generalizacion dee la variamza 
+en r aov(formula,data)
+formula =variable dependiente ~ variable independiente
+
+otra opcion
+ezANOVA(data,dv,wid,between,return_aov)
+dv=variable dependiente 
+wif=variable identificador 
+between=variable independiente 
+type=2
+
+hsd de tukey
+en r qtukey (p,nmeans,df,lower.tails)
+otra 
+TukeyHSD(c,which,ordered,conf.level)
+x=modelo anova ,objeto aov
+which) string con el nombre de la variable para la que se calculan las diferencias 
+ordered=valor logico , cuando es verdaelo ardena  de acierdo a sis medias para obtener difrencias positivas
+
+scheffe
+permite hacer comparaciones adicionales 
+en r ScheffeTest(x,which,contrasts,conf.level) de DescTools
+x=objeto aov
+which = variables independiente 
+contrasts=matris con lso contrastes 
+
+lectura 7
+
+anova de una via para muestras correlacionadas
+se utiliza cuando se desea comparar las medias de tres o más grupos relacionados o dependientes. Este tipo de análisis es adecuado en situaciones donde:
+
+Los mismos sujetos son medidos en diferentes condiciones o momentos: Por ejemplo, evaluar el rendimiento de los mismos participantes en varias pruebas realizadas en diferentes días o antes y después de recibir diferentes tratamientos.
+
+Las muestras provienen de los mismos individuos o están relacionadas: Las observaciones no son independientes entre sí. Por ejemplo, cuando se mide el efecto de una intervención médica en diferentes momentos (antes, durante y después del tratamiento) sobre los mismos pacientes.
+
+Se espera controlar la variabilidad intra-sujeto: Al utilizar muestras correlacionadas, se reduce la variabilidad que podría venir de diferencias entre sujetos, lo que ayuda a enfocar el análisis en las diferencias causadas por las condiciones experimentales.
+
+
+condiciones = la escala con que se mide la variable dependiente tiene propiedades de una escala de intervalos iguales 
+las mediciones son independiente al interior del grupo
+distribucion normal 
+matriz de varianzas-covarianzoas es esferica 
+en r ezANOVA() en vez de between ahora es within
+para ver la condicion 4 
+print(prueba([["Sphericity Corrections"]]
+post hock codigo 
+//////////////////////////////////////
+# Procedimiento post-hoc de Bonferroni.
+bonferroni <- pairwise.t.test(datos[["tiempo"]], datos[["algoritmo"]],
+                              p.adj = "bonferroni", paired = TRUE)
+
+cat("Corrección de Bonferroni\n")
+print(bonferroni)
+
+# Procedimiento post-hoc de Holm.
+holm <- pairwise.t.test(datos[["tiempo"]], datos[["algoritmo"]],
+                        p.adj = "holm", paired = TRUE)
+
+cat("\n\nCorrección de Holm\n")
+print(holm)
+
+# Procedimiento post-hoc HSD de Tukey.
+library(nlme) # Para el modelo mixto
+library(emmeans) # Para el análisis de medias
+
+mixto <- lme(tiempo ~ algoritmo, data = datos, random = ~1|sujeto) # Ajustar modelo mixto
+medias <- emmeans(mixto, "algoritmo") # Medias estimadas por algoritmo
+tukey <- pairs(medias, adjust = "tukey")
+
+cat("\n\nPrueba HSD de Tukey\n")
+print(tukey)
+
+# Procedimiento post-hoc de Scheffé
+cat("\n\nComparación de Scheffé\n")
+scheffe <- pairs(medias, adjust = "scheffe")
+print(scheffe)
+//////////////////////////////////////////////////
+lectura 8 
+transformacion de datos 
+transformacion lineal como de fareinhei a celsius 
+transformacion logaritmica  para distribuciones asimetricas asi podemos facilitar la normalidad. con la funcion log(x,base)
+escalera de potencias de tukey transformTukey(x,start,end,int,plotit,verbose,quiet,static,returnlambda) del paquete rcompanion 
+x: vector de valores a transformar.
+start: valor inicial de λ a evaluar.
+end: valor final de λ a evaluar.
+int: intervalo entre los valores de λ a evaluar.
+plotit: si toma valor TRUE, entrega los siguientes gráficos:
+Estadístico de la prueba de normalidad versus λ.
+Histograma de los valores transformados.
+Gráfico Q-Q de los valores transformados.
+verbose: si toma valor TRUE, muestra información adicional sobre la prueba de normalidad con respecto a λ.
+quiet: si toma valor TRUE, no muestra información alguna por pantalla.
+statistic: si toma valor 1, usa la prueba de normalidad de Shapiro-Wilk. Con valor 2, usa la prueba de Anderson-Darling.
+returnLambda: si toma valor TRUE, devuelve el valor de λ. Si toma valor FALSE, devuelve los datos transformados.
+
+box cox
+del paquete descTools
+BoxCoxLambda(x,lower,upper) devuelve el valor optimp de lambda 
+BoxCoc(x,lamda)transforma un vector
+BoxCoxInv(x,lambda)revierte la transformacion
+x=vector numerico 
+lower=limite inferior para los posiboles valores
+upper=limite superior para los posibles valores
+lambda=parametro de la transformacion 
+
+lectura 9
+
+pruebas no parametricas con 1 o 2 muestras
+condiciones
+al intentar verificar la normalidad nos da que nos siguen una distriibucion normal en eso casos podemos hacer una prueba no parametrica
+pueba de suuma de rangos de wilcoxon 
+condiciones 
+las observacinoes de ambas muestras deben ser independientes 
+la escala de medicion epleada debe ser a lo menos ordinal 
+en r wilcox.test(x,y,paired=false,alternative,mu,conf.level)
+x,y=vectores numericos con las observaciones . para aplicad la pueba en unia unica muesra y=null
+
+prueba de rangos con signo de wilcox
+inferir sobre la media de las diferencias de d2 muestras apareadasa 
+condiciones =
+los pares de observaciones deben ser independiente 
+la escala de medicion empleada en ambas muestras debe ser a lo menos ordinal
+
+lectura 10
+
+pruebas no parametricas con mas de 2 muestras 
+
+la alternativa no parametrica de anova cuando no se cumople el supuesto de normalidad 
+
+prueba de kruskal waillis
+condiciones 
+la variable independiente debe tener a lo menos 2 niveles
+la escala de la variable dependiente de ser a lo menos ordinal 
+las observaciones son independientes entre si 
+en r  kruskal.test(formula,dataa)
+formula =variable dependiente~variable independiente
+post hoc pairwise.wilcox.test(x.g.p.adjust.method,paired=false)
+g=factor o agrupamiento
+p.adjust.method= puede ser "holm" "BH" 
+paired=valor booleano que indica si la prueba es pareada (verdadero) o no .para la prueba de kruskal wallis debe ser false 
+
+prueba de friedman
+alternativa de anova de una via para muestras correlacionadas 
+condiciones 
+la variable independiente debe ser categorica y tener a lo menos 3 niveles 
+la escala de la variable dependiente debe ser a lo menos ordinal 
+las observaciones son una muestra aleatoria e independiente de la poblacion 
+en r friedman.test(formula,data)
+formula(variable dependiente ~ variable independiente| indentificador del caso
+para los post hoc es lo mismo que kruskal pero el paired debe ser true
+pairwise.wilcox.test()  
+
+
+
+
+
